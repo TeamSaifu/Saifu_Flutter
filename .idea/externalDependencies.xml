@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalDependencies">
+    <plugin id="Gitflow" />
+    <plugin id="cn.yiiguxing.plugin.translate" />
+    <plugin id="com.dubreuia" />
+    <plugin id="izhangzhihao.rainbow.brackets" />
+    <plugin id="net.vektah.codeglance" />
+    <plugin id="some.awesome" />
+  </component>
+</project>
