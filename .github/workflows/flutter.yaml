@@ -1,0 +1,30 @@
+name: Flutter CI
+'on':
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+      - name: Flutter setting
+        uses: subosito/flutter-action@v1
+        with:
+          channel: beta
+      - name: "Install and Build  🔧"
+        run: |
+          flutter config --enable-web
+          flutter pub get
+          flutter test
+          flutter build web
+      - name: "Deploy 🚀"
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          BRANCH: gh-pages
+          FOLDER: build/web
