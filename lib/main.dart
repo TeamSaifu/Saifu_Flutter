@@ -25,13 +25,17 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
 
+  // ナビゲーションバー
+  // https://dev.classmethod.jp/articles/basic_bottom_navigation_flutter/
   @override
+  //初期ページ
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
+  //画面のリストを作成 (ここで切り替え先を指定する）
   static List<Widget> _pageList = [
     CustomPage(pannelColor: Colors.cyan, title: 'ホーム'),
     CustomPage(pannelColor: Colors.cyan, title: '欲しい物リスト'),
@@ -39,6 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
     CustomPage(pannelColor: Colors.cyan, title: '設定'),
   ];
 
+  // 一番上のタイトルを変えるとこ
   static List<Widget> _pageTitle = [
     Text('ホーム'),
     Text('欲しい物リスト'),
@@ -52,6 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  //本体
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,6 +67,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: _pageList[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        // ここを変えたらアイコンとか文字とか変えられる
+        // Icon（Icons.***) でいろいろアイコンが出せますよ～
+        // https://api.flutter.dev/flutter/material/Icons-class.html
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

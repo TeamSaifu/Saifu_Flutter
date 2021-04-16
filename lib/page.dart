@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CustomPage extends StatelessWidget {
+  // 汎用的なページ 下のやつ渡すとなんか出る
+  // pannelColor : 画面色
+  // title : 真ん中の文字
   final Color pannelColor;
   final String title;
 
