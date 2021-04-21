@@ -11,24 +11,76 @@ class log extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleTextStyle = Theme.of(context).textTheme.headline6;
+    var list = [
+      "メッセージ",
+      "メッセージ",
+      "メッセージ",
+      "メッセージ",
+      "メッセージ",
+    ];
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(body: ListView.builder(
+          itemBuilder: (BuildContext context, int index) {
+            if (index >= list.length) {
+              list.addAll([
+                "メッセージ",
+                "メッセージ",
+                "メッセージ",
+                "メッセージ",
+              ]);
+            }
+            return _messageItem(list[index]);
+          },
+        )));
+  }
+
+  Widget _messageItem(String title) {
     return Container(
-      child: Center(
-        child: Container(
-          decoration: BoxDecoration(
-            color: pannelColor,
-          ),
-          child: Center(
-            child: Text(
-              "aaaa",
-              style: TextStyle(
-                fontSize: titleTextStyle.fontSize,
-                color: titleTextStyle.color,
-              ),
-            ),
-          ),
+      decoration: new BoxDecoration(
+          border:
+              new Border(bottom: BorderSide(width: 1.0, color: Colors.grey))),
+      child: ListTile(
+        title: Text(
+          title,
+          style: TextStyle(color: Colors.black, fontSize: 18.0),
         ),
+        onTap: () {
+          print("onTap called.");
+        }, // タップ
+        onLongPress: () {
+          print("onLongTap called.");
+        }, // 長押し
       ),
     );
   }
+// @override
+// Widget build(BuildContext context) {
+//   var list = [
+//     "要素1",
+//     "要素2",
+//     "要素3",
+//     "要素4",
+//     "要素5",
+//   ];
+//   final titleTextStyle = Theme.of(context).textTheme.headline6;
+//   return Container(
+//     child: Center(
+//       child: Container(
+//         decoration: BoxDecoration(
+//           color: Colors.white,
+//         ),
+//         child: Center(
+//           child: Text(
+//             "リスト表示",
+//             style: TextStyle(
+//               fontSize: titleTextStyle.fontSize,
+//               color: titleTextStyle.color,
+//             ),
+//           ),
+//         ),
+//       ),
+//     ),
+//   );
+// }
 }
