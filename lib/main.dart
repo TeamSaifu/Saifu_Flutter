@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'log.dart';
 import 'page.dart';
 
 void main() {
@@ -39,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   static List<Widget> _pageList = [
     CustomPage(pannelColor: Colors.cyan, title: 'ホーム'),
     CustomPage(pannelColor: Colors.cyan, title: '欲しい物リスト'),
-    CustomPage(pannelColor: Colors.cyan, title: '履歴'),
+    log(pannelColor: Colors.cyan, title: '履歴'),
     CustomPage(pannelColor: Colors.cyan, title: '設定'),
   ];
 
