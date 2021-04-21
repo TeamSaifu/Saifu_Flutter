@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'page.dart';
+import 'package:saifu/page.dart';
+import 'package:saifu/wish_list.dart';
 
 void main() {
   runApp(MyApp());
@@ -38,7 +39,8 @@ class _MyHomePageState extends State<MyHomePage> {
   //画面のリストを作成 (ここで切り替え先を指定する）
   static List<Widget> _pageList = [
     CustomPage(pannelColor: Colors.cyan, title: 'ホーム'),
-    CustomPage(pannelColor: Colors.cyan, title: '欲しい物リスト'),
+    // CustomPage(pannelColor: Colors.cyan, title: '欲しい物リスト'),
+    WishListPage(),
     CustomPage(pannelColor: Colors.cyan, title: '履歴'),
     CustomPage(pannelColor: Colors.cyan, title: '設定'),
   ];
