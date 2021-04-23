@@ -12,13 +12,10 @@ class log extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //各データ用配列
-    var icon = [
-      "#",
-      "%",
-    ];
-    var date = ["03.23", "03.24"];
-    var name = ["お弁当", "家電製品購入"];
-    var price = ["¥620", "¥230,000"];
+    var icon = ["#", "%", "&"];
+    var date = ["03.23", "03.24", "04.01"];
+    var name = ["お弁当", "家電製品購入", "ゲーム機"];
+    var price = ["¥620", "¥2,300,000", "¥48,000"];
 
     return MaterialApp(
         //右上デバッグを消すやつ
@@ -49,30 +46,46 @@ Widget _messageItem(String icon, String date, String price, String name) {
       // スワイプ後に実行される（削除処理などを書く）
       print('onDismissed');
     },
+    // 一行ずつリスト表示
     child: Card(
-      //現在は横並び均等、文字数によりずれるので要調整
         child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Container(
+      children: [
+        Expanded(
+          flex: 1,
+          child: Container(
             child: Text(
-          date,
-          style: TextStyle(fontSize: 20),
-        )),
-        Container(
-          child: Text(icon, style: TextStyle(fontSize: 20)),
-        ),
-        Container(
-          child: Text(
-            name,
-            style: TextStyle(fontSize: 20),
+              date,
+              style: TextStyle(fontSize: 20),
+            ),
           ),
         ),
-        Container(
-          child: Text(
+        Expanded(
+          flex: 1,
+          child: Container(
+              padding: EdgeInsets.only(left: 15),
+              child: Text(
+                icon,
+                style: TextStyle(fontSize: 20),
+              )),
+        ),
+        Expanded(
+          flex: 3,
+          child: Container(
+              padding: EdgeInsets.only(right: 30),
+              child: Text(
+                name,
+                style: TextStyle(fontSize: 20),
+                textAlign: TextAlign.right,
+              )),
+        ),
+        Expanded(
+          flex: 2,
+          child: Container(
+              child: Text(
             price,
             style: TextStyle(fontSize: 20),
-          ),
+            textAlign: TextAlign.right,
+          )),
         ),
       ],
     )),
