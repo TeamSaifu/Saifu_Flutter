@@ -11,50 +11,70 @@ class log extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var list = [
-      "メッセージ1",
-      "メッセージ2",
-      "メッセージ3",
-      "メッセージ4",
-      "メッセージ5",
-      "メッセージ6",
-      "メッセージ7",
-      "メッセージ8",
-      "メッセージ9",
-      "メッセージ10",
+    //各データ用配列
+    var icon = [
+      "#",
+      "%",
     ];
+    var date = ["03.23", "03.24"];
+    var name = ["お弁当", "家電製品購入"];
+    var price = ["¥620", "¥230,000"];
+
     return MaterialApp(
-      //右上デバッグを消すやつ
+        //右上デバッグを消すやつ
         debugShowCheckedModeBanner: false,
-        home: Scaffold(body: ListView.builder(
+        home: Scaffold(
+            body: ListView.builder(
           // listの上限を設定
-          itemCount: list.length,
+          itemCount: icon.length,
           itemBuilder: (BuildContext context, int index) {
-            return _messageItem(list[index]);
+            return _messageItem(
+                icon[index], date[index], price[index], name[index]);
           },
         )));
   }
+}
 
-  Widget _messageItem(String title) {
-    // 項目をスワイプすると削除する
-    return Dismissible(
-      key: Key("some id"),
+Widget _messageItem(String icon, String date, String price, String name) {
+  // 項目をスワイプすると削除する
+  return Dismissible(
+    key: Key("some id"),
 
-      // end to startの背景
-      background: Container(color: Colors.red),
-      secondaryBackground: Container(color: Colors.red),
+    // end to startの背景
+    background: Container(color: Colors.red),
+    secondaryBackground: Container(color: Colors.red),
 
-      direction: DismissDirection.endToStart,
-      onDismissed: (direction) {
-        // スワイプ後に実行される（削除処理などを書く）
-        print('onDismissed');
-      },
-      child: ListTile(
-        title: Text(
-          title,
-          style: TextStyle(color: Colors.black, fontSize: 18.0),
+    direction: DismissDirection.endToStart,
+    onDismissed: (direction) {
+      // スワイプ後に実行される（削除処理などを書く）
+      print('onDismissed');
+    },
+    child: Card(
+      //現在は横並び均等、文字数によりずれるので要調整
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Container(
+            child: Text(
+          date,
+          style: TextStyle(fontSize: 20),
+        )),
+        Container(
+          child: Text(icon, style: TextStyle(fontSize: 20)),
         ),
-      ),
-    );
-  }
+        Container(
+          child: Text(
+            name,
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        Container(
+          child: Text(
+            price,
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+      ],
+    )),
+  );
 }
