@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       //右上デバッグを消すやつ
       debugShowCheckedModeBanner: false,
-      
+
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
   static List<Widget> _pageList = [
     CustomPage(pannelColor: Colors.cyan, title: 'ホーム'),
     CustomPage(pannelColor: Colors.cyan, title: '欲しい物リスト'),
-    log(pannelColor: Colors.cyan, title: '履歴'),
+    Log(pannelColor: Colors.cyan, title: '履歴'),
     CustomPage(pannelColor: Colors.cyan, title: '設定'),
   ];
 
