@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:saifu/add_wish_item.dart';
 import 'package:saifu/page.dart';
+import 'package:saifu/wish_list.dart';
 import 'package:saifu/wish_list.dart';
 
 void main() {
@@ -16,7 +17,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      // ルーティングを記述
+      // home: MyHomePage(title: 'Flutter Demo Home Page'), // <- ルーティングを記述したので不要
+      initialRoute: '/',
+      routes: {
+        '/': (_) => MyHomePage(),
+        '/add': (_) => AddWishItemPage(),
+      },
     );
   }
 }
@@ -64,7 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // title: Text(widget.title),
         title: _pageTitle[_selectedIndex],
       ),
       body: _pageList[_selectedIndex],
