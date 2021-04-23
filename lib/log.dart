@@ -41,12 +41,17 @@ Widget _messageItem(String icon, String date, String price, String name) {
     background: Container(color: Colors.red),
     secondaryBackground: Container(color: Colors.red),
 
+    //右から左へスワイプ出来るようになる。
     direction: DismissDirection.endToStart,
     onDismissed: (direction) {
       // スワイプ後に実行される（削除処理などを書く）
       print('onDismissed');
     },
+
     // 一行ずつリスト表示
+    // flexで横の割合を当てる https://qiita.com/kalupas226/items/5aa41ca409730606000f
+    // Containerで各項目の設定をする https://mcommit.hatenadiary.com/entry/2020/01/07/003553
+
     child: Card(
         child: Row(
       children: [
