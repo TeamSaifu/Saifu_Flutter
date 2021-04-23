@@ -275,3 +275,4 @@ gradle-app.setting
 **/build/
 
 # End of https://www.toptal.com/developers/gitignore/api/flutter,windows,macos,androidstudio
+/.idea/libraries/
