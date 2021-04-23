@@ -27,22 +27,76 @@ class _WishListPageState extends State<WishListPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              color: Colors.blue, // 要素の幅を確認するための背景色
-              child: Text('sample text'),
-            ),
-            Container(
-              child: Text('sample text'),
-            ),
+            // リスト内のアイテムWidgetを呼び出す
+            WishListItem(item: 'サメマゲドン', price: '３，３００'),
+            WishListItem(item: '単位', price: '１，０００'),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-            // ボタンの処理
+          // ボタンの処理
         },
       ),
+    );
+  }
+}
+
+// 欲しい物リストのアイテム
+class WishListItem extends StatelessWidget {
+  // item : 欲しいアイテム
+  // price : 値段
+  final String item;
+  final String price;
+
+  WishListItem({@required this.item, @required this.price});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 4,
+          child: Container(
+            // 要素の幅を確認するための背景色
+            // color: Colors.blue,
+            height: 50,
+            child:Center(
+              child: Text(item),
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Container(
+            // 要素の幅を確認するための背景色
+            // color: Colors.red,
+            height: 50,
+            child:Center(
+              child: Text('￥' + price),
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: SizedBox(
+            // SizedBoxでボタンのサイズを指定
+            height: 50,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                // ボタンの背景色を透明化
+                primary: Colors.red.withOpacity(0.0),
+                shadowColor: Colors.red.withOpacity(0.0),
+              ),
+              child: Icon(Icons.arrow_drop_down, color: Colors.black),
+              onPressed: () {
+                // ボタンの処理
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
