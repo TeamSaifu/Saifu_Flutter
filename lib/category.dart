@@ -8,7 +8,7 @@ class Category extends StatelessWidget {
   final String title;
 
   // カテゴリ一覧
-  var category = [
+  final category = [
     "食費",
     "娯楽費",
     "通信費",
