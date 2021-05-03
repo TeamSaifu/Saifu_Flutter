@@ -71,6 +71,5 @@ class SaifuDB {
       },
       version: 1,
     );
-    return databese;
   }
 }
