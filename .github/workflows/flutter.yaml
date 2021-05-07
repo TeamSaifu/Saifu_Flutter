@@ -1,4 +1,4 @@
-name: Flutter Web CI
+name: Pages Deploy
 'on':
   push:
     branches:
