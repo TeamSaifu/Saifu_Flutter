@@ -22,6 +22,7 @@ class _SampleState extends State<SamplePage> {
   }
 
   // ↓デザイン部分
+  // よく使うWidget : https://qiita.com/coka__01/items/dedb569f6357f1b503fd
   @override
   Widget build(BuildContext context) {
     // 画面サイズを取得（幅）

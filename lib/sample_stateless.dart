@@ -5,6 +5,9 @@ class SamplePage extends StatelessWidget {
   final Color textColor = Colors.white;
   final String title = 'Hello';
 
+
+  // ↓デザイン部分
+  // よく使うWidget : https://qiita.com/coka__01/items/dedb569f6357f1b503fd
   @override
   Widget build(BuildContext context) {
     return Container(
