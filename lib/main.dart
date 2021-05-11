@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-
-import 'log.dart';
-import 'page.dart';
-import 'setting.dart';
+import 'package:saifu/page.dart';
+import 'package:saifu/wish_list.dart';
+import 'package:saifu/add_wish_item.dart';
+import 'package:saifu/log.dart';
+import 'package:saifu/setting.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,7 +21,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      // ルーティングを記述
+      // home: MyHomePage(title: 'Flutter Demo Home Page'), // <- ルーティングを記述したので不要
+      initialRoute: '/',
+      routes: {
+        '/': (_) => MyHomePage(),
+        '/add': (_) => AddWishItemPage(),
+      },
     );
   }
 }
@@ -43,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //画面のリストを作成 (ここで切り替え先を指定する）
   static List<Widget> _pageList = [
     CustomPage(pannelColor: Colors.cyan, title: 'ホーム'),
-    CustomPage(pannelColor: Colors.cyan, title: '欲しい物リスト'),
+    WishListPage(),
     Log(pannelColor: Colors.cyan, title: '履歴'),
     Setting(pannelColor: Colors.cyan, title: '設定'),
   ];
@@ -67,7 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // title: Text(widget.title),
         title: _pageTitle[_selectedIndex],
       ),
       body: _pageList[_selectedIndex],
