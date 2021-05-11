@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'log.dart';
 import 'page.dart';
+import 'setting.dart';
 
 void main() {
   runApp(MyApp());
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     CustomPage(pannelColor: Colors.cyan, title: 'ホーム'),
     CustomPage(pannelColor: Colors.cyan, title: '欲しい物リスト'),
     Log(pannelColor: Colors.cyan, title: '履歴'),
-    CustomPage(pannelColor: Colors.cyan, title: '設定'),
+    Setting(pannelColor: Colors.cyan, title: '設定'),
   ];
 
   // 一番上のタイトルを変えるとこ
