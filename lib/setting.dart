@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Setting extends StatelessWidget {
   final Color pannelColor;
   final String title;
-  bool _toggled = false;
+  final bool _toggled = false;
 
   Setting({@required this.pannelColor, @required this.title});
 
@@ -16,7 +16,7 @@ class Setting extends StatelessWidget {
         SwitchListTile(
           title: Text('通知'),
           secondary: Icon(Icons.airplanemode_active),
-          onChanged: (value) {},
+          onChanged: (bool value) {},
         ),
         Divider(
           thickness: 1.2,
