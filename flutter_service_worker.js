@@ -7,15 +7,15 @@ const RESOURCES = {
 "assets/FontManifest.json": "dc3d03800ccca4601324923c0b1d6d57",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "6d342eb68f170c97609e9da345464e5e",
 "assets/AssetManifest.json": "2efbb41d7877d10aac9d091f58ccd7b9",
-"assets/NOTICES": "146b1fc97fe818a378b64f7308b0917b",
+"assets/NOTICES": "9431c981148a617a2f980ec19644bc74",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "version.json": "0da25620a4e2c82b44a41634d2213bef",
 "manifest.json": "8a30903a5316b5bbb4808619c258748e",
 "main.dart.js": "a05127569631d181a08a4ab53898f498",
-"index.html": "8f8b61b84099d5a767e3a5f3e0fa021b",
-"/": "8f8b61b84099d5a767e3a5f3e0fa021b"
+"index.html": "b6157383f748ee8384d780f5c3cd23ef",
+"/": "b6157383f748ee8384d780f5c3cd23ef"
 };
 
 // The application shell files that are downloaded before a service worker can
