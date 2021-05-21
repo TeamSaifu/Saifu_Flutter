@@ -15,6 +15,7 @@ class Setting extends StatelessWidget {
       children: [
         SwitchListTile(
           title: Text('通知'),
+          value: _toggled,
           secondary: Icon(Icons.airplanemode_active),
           onChanged: (bool value) {},
         ),
