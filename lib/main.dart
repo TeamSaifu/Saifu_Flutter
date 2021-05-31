@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (_) => MyHomePage(),
-        // '/add': (_) => AddWishItemPage(),
         '/add': (_) => AddWishItemPage(),
         '/enter': (_) => EnterDataPage(),
       },
