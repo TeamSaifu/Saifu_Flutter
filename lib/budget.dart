@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class BudgetPage extends StatelessWidget {
-  Widget _budgetContainer(_title, _color, _price, _screenSize, _flg) {
+  Widget _budgetContainer({String title, Color color, String price, Size screenSize, bool flg}) {
     Widget _editButton() {
       return SizedBox(
-        width: _screenSize.width * 0.2,
+        width: screenSize.width * 0.2,
         height: 50,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -23,29 +23,29 @@ class BudgetPage extends StatelessWidget {
     }
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: _screenSize.width * 0.05),
+      padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '$_title',
+            '$title',
             style: TextStyle(
               fontSize: 34,
-              color: _color,
+              color: color,
             ),
           ),
           Row(
             children: [
               SizedBox(
-                width: _screenSize.width * 0.7,
+                width: screenSize.width * 0.7,
                 child: Text(
-                  '$_price',
+                  '$price',
                   style: TextStyle(
                     fontSize: 50,
                   ),
                 ),
               ),
-              _flg ? _editButton() : Container()
+              flg ? _editButton() : Container()
             ],
           ),
         ],
