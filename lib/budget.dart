@@ -25,7 +25,7 @@ class BudgetPage extends StatelessWidget {
                   ),
                 ),
               ),
-              flg ? _editButton(screenSize) : Container()
+              flg ? _editButton(screenSize: screenSize) : Container()
             ],
           ),
         ],
