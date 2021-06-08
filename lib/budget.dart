@@ -2,26 +2,6 @@ import 'package:flutter/material.dart';
 
 class BudgetPage extends StatelessWidget {
   Widget _budgetContainer({String title, Color color, String price, Size screenSize, bool flg}) {
-    Widget _editButton() {
-      return SizedBox(
-        width: screenSize.width * 0.2,
-        height: 50,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            primary: Colors.cyan,
-            onPrimary: Colors.white,
-          ),
-          child: Text(
-            '編集',
-            style: TextStyle(fontSize: 20),
-          ),
-          onPressed: () {
-            // ボタンの処理
-          },
-        ),
-      );
-    }
-
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
       child: Column(
@@ -45,13 +25,33 @@ class BudgetPage extends StatelessWidget {
                   ),
                 ),
               ),
-              flg ? _editButton() : Container()
+              flg ? _editButton(screenSize) : Container()
             ],
           ),
         ],
       ),
     );
   }
+  
+  Widget _editButton({Size screenSize}) {
+      return SizedBox(
+        width: screenSize.width * 0.2,
+        height: 50,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: Colors.cyan,
+            onPrimary: Colors.white,
+          ),
+          child: Text(
+            '編集',
+            style: TextStyle(fontSize: 20),
+          ),
+          onPressed: () {
+            // ボタンの処理
+          },
+        ),
+      );
+    }
 
   @override
   Widget build(BuildContext context) {
