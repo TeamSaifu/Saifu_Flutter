@@ -69,11 +69,11 @@ class BudgetPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _budgetContainer(
-              '予算', Colors.lightGreen, '46,000円', _screenSize, false),
+              title: '予算', color: Colors.lightGreen, price: '46,000円', screenSize: _screenSize, flg: false),
           _budgetContainer(
-              '総収入', Colors.blueAccent, '50,000円', _screenSize, true),
+              title: '総収入', color: Colors.blueAccent, price: '50,000円', screenSize: _screenSize, flg: true),
           _budgetContainer(
-              '総支出', Colors.redAccent, '4,000円', _screenSize, true),
+              title: '総支出', color: Colors.redAccent, price: '4,000円', screenSize: _screenSize, flg: true),
         ],
       ),
     );
