@@ -2,7 +2,7 @@
     package="com.example.saifu">
 
     <application
-        android:name="io.flutter.app.FlutterApplication"
+        android:name=".Application"
         android:label="saifu"
         android:icon="@mipmap/ic_launcher">
         <activity

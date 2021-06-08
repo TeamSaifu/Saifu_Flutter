@@ -87,10 +87,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   // 通知のあれこれ
   @override
   void initState() {
+    /// iOS用 PUSH通知の許可確認
+    _firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true));
+
     FirebaseMessaging.instance
         .getInitialMessage()
         .then((RemoteMessage message) async {
@@ -105,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       // Logcatにtoken表示
       String token = await FirebaseMessaging.instance.getToken();
-      print("token:" + token);
+      print("tokena:" + token);
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
