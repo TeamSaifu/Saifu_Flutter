@@ -87,14 +87,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   // 通知のあれこれ
   @override
   void initState() {
     /// iOS用 PUSH通知の許可確認
-    _firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(sound: true, badge: true, alert: true));
+    _firebaseMessaging.requestPermission();
 
     FirebaseMessaging.instance
         .getInitialMessage()
