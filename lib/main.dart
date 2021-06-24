@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:saifu/page.dart';
-import 'package:saifu/wish_list.dart';
 import 'package:saifu/add_wish_item.dart';
 import 'package:saifu/log.dart';
+import 'package:saifu/page.dart';
+import 'package:saifu/shortcut.dart';
+import 'package:saifu/wish_list.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (_) => MyHomePage(),
         '/add': (_) => AddWishItemPage(),
+        '/shortcut': (_) => ShortcutPage(),
       },
     );
   }
