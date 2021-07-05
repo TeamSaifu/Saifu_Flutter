@@ -20,12 +20,12 @@ class _HomeState extends State<HomePage> {
   final PageController controller = PageController(initialPage: 0);
 
   List<ShortcutItemModel> _shortcutList = [
-    ShortcutItemModel(name: '弁当', price: '￥550'),
-    ShortcutItemModel(name: '美容院', price: '￥2,800'),
-    ShortcutItemModel(name: '課金', price: '￥10,000'),
-    ShortcutItemModel(name: 'うまい棒', price: '￥10'),
-    ShortcutItemModel(price: '￥500'),
-    ShortcutItemModel(name: '弁当', price: '￥550'),
+    // ShortcutItemModel(name: '弁当', price: '￥550'),
+    // ShortcutItemModel(name: '美容院', price: '￥2,800'),
+    // ShortcutItemModel(name: '課金', price: '￥10,000'),
+    // ShortcutItemModel(name: 'うまい棒', price: '￥10'),
+    // ShortcutItemModel(price: '￥500'),
+    // ShortcutItemModel(name: '弁当', price: '￥550'),
     ShortcutItemModel(name: '美容院', price: '￥2,800'),
     ShortcutItemModel(name: '課金', price: '￥10,000'),
     ShortcutItemModel(name: 'うまい棒', price: '￥10'),
@@ -170,7 +170,7 @@ class _HomeState extends State<HomePage> {
 
         SizedBox(
           width: screenWidth * 0.8,
-          height: screenHeight * 0.2,
+          height: _shortcutList.length == 0 ? screenHeight * 0.45 : screenHeight * 0.2,
 
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -196,7 +196,7 @@ class _HomeState extends State<HomePage> {
           ),
         ),
 
-        SizedBox(
+        _shortcutList.length == 0 ? Container() : SizedBox(
           height: screenHeight * 0.25,
           child: PageView.builder(
             controller: controller,
@@ -207,7 +207,7 @@ class _HomeState extends State<HomePage> {
           ),
         ),
 
-        SmoothPageIndicator(
+        _shortcutList.length == 0 || (_shortcutList.length / 4).ceil() == 1 ? Container(height: screenHeight * 0.02,) : SmoothPageIndicator(
           controller: controller,
           count: (_shortcutList.length / 4).ceil(),
           effect: SlideEffect(
