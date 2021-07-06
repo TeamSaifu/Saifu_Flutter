@@ -46,6 +46,8 @@ class _HomeState extends State<HomePage> {
   //アプリ起動時に一度だけ実行される
   @override
   void initState() {
+    super.initState();
+    
     // 日付を取得し表示リストを初期化
     initializeDateFormatting('ja');
     setState(() {
