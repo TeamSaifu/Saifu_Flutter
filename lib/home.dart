@@ -1,11 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
 
 import 'package:saifu/shortcut_model.dart';
-import 'package:saifu/enter_data.dart';
 
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
+
+class DisplayModel {
+  String title;
+  int price;
+  int balance;
+
+  DisplayModel({
+    @required this.title,
+    @required this.price,
+    this.balance,
+  });
+}
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -17,20 +31,44 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomeState extends State<HomePage> {
-  final PageController controller = PageController(initialPage: 0);
+  final formatter = NumberFormat("#,###");
+
+  static String _nowDate;
+  static String _nowMonth;
+
+  //アプリ起動時に一度だけ実行される
+  @override
+  void initState() {
+    initializeDateFormatting('ja');
+    setState(() {
+      _nowDate = new DateFormat.yMMMd('ja').format(DateTime.now()).toString();
+      _nowMonth = new DateFormat.yMMM('ja').format(DateTime.now()).toString();
+      _displayList.addAll([
+        DisplayModel(title: '$_nowDate', price: 7120),
+        DisplayModel(title: '$_nowDateの予算', price: 1130, balance: 1650),
+        DisplayModel(title: '$_nowDateまでの予算', price: 4430, balance: 4950),
+        DisplayModel(title: '$_nowMonthの予算', price: 50630, balance: 51150),
+      ]);
+    });
+  }
+
+  List<DisplayModel> _displayList = [];
+
+  int _displayIndex = 0;
 
   List<ShortcutItemModel> _shortcutList = [
-    // ShortcutItemModel(name: '弁当', price: '￥550'),
-    // ShortcutItemModel(name: '美容院', price: '￥2,800'),
-    // ShortcutItemModel(name: '課金', price: '￥10,000'),
-    // ShortcutItemModel(name: 'うまい棒', price: '￥10'),
-    // ShortcutItemModel(price: '￥500'),
-    // ShortcutItemModel(name: '弁当', price: '￥550'),
-    ShortcutItemModel(name: '美容院', price: '￥2,800'),
-    ShortcutItemModel(name: '課金', price: '￥10,000'),
-    ShortcutItemModel(name: 'うまい棒', price: '￥10'),
-    ShortcutItemModel(price: '￥500'),
+    ShortcutItemModel(name: '弁当', price: 550),
+    ShortcutItemModel(name: '美容院', price: 2800),
+    ShortcutItemModel(name: '課金', price: 10000),
+    ShortcutItemModel(name: 'うまい棒', price: 10),
+    ShortcutItemModel(price: 500),
+    ShortcutItemModel(name: '弁当', price: 550),
+    ShortcutItemModel(name: '美容院', price: 2800),
+    ShortcutItemModel(name: '課金', price: 10000),
+    ShortcutItemModel(name: 'うまい棒', price: 10),
   ];
+
+  final PageController controller = PageController(initialPage: 0);
 
   Widget _textLabel({
     double contentWidth,
@@ -75,7 +113,7 @@ class _HomeState extends State<HomePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _textLabel(contentWidth: contentWidth, text: _shortcutList[index].name != null ? _shortcutList[index].name : '', fontSize: 20.0, color: Colors.grey.shade700),
-            _textLabel(contentWidth: contentWidth, text: _shortcutList[index].price, fontSize: 20.0, color: Colors.grey.shade700),
+            _textLabel(contentWidth: contentWidth, text: '￥' + formatter.format(_shortcutList[index].price), fontSize: 20.0, color: Colors.grey.shade700),
           ],
         ),
         onPressed: () {
@@ -143,15 +181,40 @@ class _HomeState extends State<HomePage> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
 
       children: <Widget>[
-        SizedBox(
-          height: screenHeight * 0.15,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _textLabel(contentWidth: screenWidth * 0.8, text: '2021年6月11日の予算', color: Colors.grey.shade600),
-              _textLabel(contentWidth: screenWidth * 0.8, text: '￥1,660', fontSize: 45.0, color: Colors.cyan),
-              _textLabel(contentWidth: screenWidth * 0.8, text: '/￥1,980', color: Colors.cyan, textAlign: TextAlign.right),
-            ],
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              if(_displayIndex == 3) {
+                _displayIndex = 0;
+              } else {
+                _displayIndex += 1;
+              }
+            });
+          },
+          child: SizedBox(
+            height: screenHeight * 0.15,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _textLabel(
+                    contentWidth: screenWidth * 0.8,
+                    text: _displayList[_displayIndex].title,
+                    color: Colors.grey.shade600
+                ),
+                _textLabel(
+                    contentWidth: screenWidth * 0.8,
+                    text: '￥' + formatter.format(_displayList[_displayIndex].price),
+                    fontSize: 45.0,
+                    color: Colors.cyan
+                ),
+                _displayList[_displayIndex].balance == null ? Container() : _textLabel(
+                    contentWidth: screenWidth * 0.8,
+                    text: '/￥' + formatter.format(_displayList[_displayIndex].balance),
+                    color: Colors.cyan,
+                    textAlign: TextAlign.right
+                ),
+              ],
+            ),
           ),
         ),
 

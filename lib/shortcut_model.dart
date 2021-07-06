@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ShortcutItemModel {
   IconData icon;
   String name;
-  String price;
+  int price;
 
   ShortcutItemModel({
     this.icon,
