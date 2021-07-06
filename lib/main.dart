@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:saifu/page.dart';
 import 'package:saifu/wish_list.dart';
 import 'package:saifu/add_wish_item.dart';
 import 'package:saifu/enter_data.dart';
