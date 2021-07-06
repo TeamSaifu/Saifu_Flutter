@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
 
 import 'package:saifu/shortcut_model.dart';
 
@@ -9,6 +8,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
+// 表示部分のモデル
 class DisplayModel {
   String title;
   int price;
@@ -31,14 +31,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomeState extends State<HomePage> {
+  // 三桁ごとにカンマを入れるフォーマット
   final formatter = NumberFormat("#,###");
 
+  // 現在の年月日と年月
   static String _nowDate;
   static String _nowMonth;
+
+  // 表示リスト
+  List<DisplayModel> _displayList = [];
+  // 表示リストのインデックス
+  int _displayIndex = 0;
 
   //アプリ起動時に一度だけ実行される
   @override
   void initState() {
+    // 日付を取得し表示リストを初期化
     initializeDateFormatting('ja');
     setState(() {
       _nowDate = new DateFormat.yMMMd('ja').format(DateTime.now()).toString();
@@ -52,10 +60,7 @@ class _HomeState extends State<HomePage> {
     });
   }
 
-  List<DisplayModel> _displayList = [];
-
-  int _displayIndex = 0;
-
+  // ショートカットリスト
   List<ShortcutItemModel> _shortcutList = [
     ShortcutItemModel(name: '弁当', price: 550),
     ShortcutItemModel(name: '美容院', price: 2800),
@@ -68,14 +73,16 @@ class _HomeState extends State<HomePage> {
     ShortcutItemModel(name: 'うまい棒', price: 10),
   ];
 
+  // ショートカットボタンのページコントローラー
   final PageController controller = PageController(initialPage: 0);
 
+  // テキストWidget
   Widget _textLabel({
-    double contentWidth,
-    String text,
-    double fontSize = 25.0,
-    Color color = Colors.black,
-    TextAlign textAlign = TextAlign.center,
+    double contentWidth,                      // ラベル幅
+    String text,                              // テキスト
+    double fontSize = 25.0,                   // フォントサイズ（デフォルト：25）
+    Color color = Colors.black,               // テキストカラー（デフォルト：黒）
+    TextAlign textAlign = TextAlign.center,   // テキストの位置（デフォルト：中央）
   }) {
     return SizedBox(
       width: contentWidth,
@@ -91,10 +98,11 @@ class _HomeState extends State<HomePage> {
     );
   }
 
+  // ショートカットボタンWidget
   Widget _shortcutButton({
-    double contentWidth,
-    double contentHeight,
-    int index,
+    double contentWidth,    // ボタン幅
+    double contentHeight,   // ボタン高さ
+    int index,              // ショートカットリストのインデックス
   }) {
     return SizedBox(
       width: contentWidth,
@@ -123,7 +131,12 @@ class _HomeState extends State<HomePage> {
     );
   }
 
-  Widget _shortcutItems({double contentWidth, double contentHeight, int pageIndex}) {
+  // ショートカットボタンのページWidget
+  Widget _shortcutItems({
+    double contentWidth,    // ページ幅
+    double contentHeight,   // ページ高さ
+    int pageIndex,          // ページインデックス
+  }) {
     int index = pageIndex * 4;
 
     return SizedBox(
@@ -174,14 +187,16 @@ class _HomeState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;     // 画面幅
+    double screenHeight = MediaQuery.of(context).size.height;   // 画面高さ
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
 
       children: <Widget>[
+        // 表示部分
         GestureDetector(
+          // 子WidgetにTap処理を付ける
           onTap: () {
             setState(() {
               if(_displayIndex == 3) {
@@ -218,21 +233,24 @@ class _HomeState extends State<HomePage> {
           ),
         ),
 
+        // 割合ゲージ
         SizedBox(
           width: screenWidth * 0.8,
+
           child: LinearPercentIndicator(
-            animation: true,
-            animationDuration: 500,
-            lineHeight: screenHeight * 0.03,
-            percent: 0.6,
-            // center: Text("60.0%"),
-            linearStrokeCap: LinearStrokeCap.roundAll,
-            progressColor: Colors.cyan,
+            animation: true,                              // アニメーション
+            animationDuration: 500,                       // アニメーションの速さ
+            lineHeight: screenHeight * 0.03,              // ゲージの高さ
+            percent: 0.6,                                 // 割合
+            linearStrokeCap: LinearStrokeCap.roundAll,    // ゲージの角の丸み
+            progressColor: Colors.cyan,                   // ゲージの色
           ),
         ),
 
+        // データ入力ボタン
         SizedBox(
           width: screenWidth * 0.8,
+          // ショートカットが存在しなければ高さを広げる
           height: _shortcutList.length == 0 ? screenHeight * 0.45 : screenHeight * 0.2,
 
           child: ElevatedButton(
@@ -245,7 +263,6 @@ class _HomeState extends State<HomePage> {
                 ),
               ),
             ),
-
             child: const Icon(Icons.edit, size: 130.0,),
 
             onPressed: () async {
@@ -259,8 +276,11 @@ class _HomeState extends State<HomePage> {
           ),
         ),
 
+        // ショートカットボタンのページ
+        // ショートカットが存在するときのみ表示
         _shortcutList.length == 0 ? Container() : SizedBox(
           height: screenHeight * 0.25,
+
           child: PageView.builder(
             controller: controller,
             itemCount: (_shortcutList.length / 4).ceil(),
@@ -270,6 +290,8 @@ class _HomeState extends State<HomePage> {
           ),
         ),
 
+        // ショートカットボタンのページインジケータ
+        // ショートカットが存在し2ページ以上あるときのみ表示
         _shortcutList.length == 0 || (_shortcutList.length / 4).ceil() == 1 ? Container(height: screenHeight * 0.02,) : SmoothPageIndicator(
           controller: controller,
           count: (_shortcutList.length / 4).ceil(),
