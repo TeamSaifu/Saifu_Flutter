@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:saifu/add_wish_item.dart';
+import 'package:saifu/budget.dart';
+import 'package:saifu/enter_data.dart';
 import 'package:saifu/log.dart';
 import 'package:saifu/page.dart';
 import 'package:saifu/shortcut.dart';
 import 'package:saifu/wish_list.dart';
+import 'package:saifu/setting.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,6 +31,8 @@ class MyApp extends StatelessWidget {
         '/': (_) => MyHomePage(),
         '/add': (_) => AddWishItemPage(),
         '/shortcut': (_) => ShortcutPage(),
+        '/budget': (_) => BudgetPage(),
+        '/enter': (_) => EnterDataPage(),
       },
     );
   }
@@ -53,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
     CustomPage(pannelColor: Colors.cyan, title: 'ホーム'),
     WishListPage(),
     Log(pannelColor: Colors.cyan, title: '履歴'),
-    CustomPage(pannelColor: Colors.cyan, title: '設定'),
+    Setting(pannelColor: Colors.cyan, title: '設定'),
   ];
 
   // 一番上のタイトルを変えるとこ
