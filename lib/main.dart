@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:saifu/page.dart';
-import 'package:saifu/wish_list.dart';
 import 'package:saifu/add_wish_item.dart';
+import 'package:saifu/budget.dart';
 import 'package:saifu/enter_data.dart';
 import 'package:saifu/log.dart';
+import 'package:saifu/page.dart';
+import 'package:saifu/wish_list.dart';
 import 'package:saifu/setting.dart';
 
 void main() {
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (_) => MyHomePage(),
         '/add': (_) => AddWishItemPage(),
+        '/budget': (_) => BudgetPage(),
         '/enter': (_) => EnterDataPage(),
       },
     );
