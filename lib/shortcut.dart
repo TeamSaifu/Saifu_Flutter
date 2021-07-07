@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:saifu/shortcut_model.dart';
 
 class ShortcutPage extends StatelessWidget {
-  List<ShortcutModel> _shortcutList = [
+  final List<ShortcutModel> _shortcutList = [
     ShortcutModel(price: '￥1000', icon: Icons.add, name: '住田'),
     ShortcutModel(price: '￥2000', icon: Icons.face, name: '田中'),
   ];
