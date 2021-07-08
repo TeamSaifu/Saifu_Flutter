@@ -4,6 +4,7 @@ import 'package:saifu/budget.dart';
 import 'package:saifu/enter_data.dart';
 import 'package:saifu/log.dart';
 import 'package:saifu/page.dart';
+import 'package:saifu/shortcut.dart';
 import 'package:saifu/wish_list.dart';
 import 'package:saifu/setting.dart';
 
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (_) => MyHomePage(),
         '/add': (_) => AddWishItemPage(),
+        '/shortcut': (_) => ShortcutPage(),
         '/budget': (_) => BudgetPage(),
         '/enter': (_) => EnterDataPage(),
       },
