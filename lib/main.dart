@@ -3,10 +3,10 @@ import 'package:saifu/add_wish_item.dart';
 import 'package:saifu/budget.dart';
 import 'package:saifu/enter_data.dart';
 import 'package:saifu/log.dart';
-import 'package:saifu/page.dart';
 import 'package:saifu/shortcut.dart';
 import 'package:saifu/wish_list.dart';
 import 'package:saifu/setting.dart';
+import 'package:saifu/home.dart';
 
 void main() {
   runApp(MyApp());
@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //画面のリストを作成 (ここで切り替え先を指定する）
   static List<Widget> _pageList = [
-    CustomPage(pannelColor: Colors.cyan, title: 'ホーム'),
+    HomePage(),
     WishListPage(),
     Log(pannelColor: Colors.cyan, title: '履歴'),
     Setting(pannelColor: Colors.cyan, title: '設定'),
