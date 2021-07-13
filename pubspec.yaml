@@ -26,6 +26,7 @@ dependencies:
   firebase_messaging: ^8.0.0-dev.14
   flutter_local_notifications: ^4.0.1+1
   flutter_dotenv: ^2.0.1
+  firebase_core: ^0.7.0
 
 
   # The following adds the Cupertino Icons font to your application.
