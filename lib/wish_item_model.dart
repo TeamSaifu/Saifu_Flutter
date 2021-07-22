@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class WishItemModel {
   String item;
-  String price;
+  int price;
   String url;
 
   WishItemModel({

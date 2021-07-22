@@ -40,7 +40,7 @@ class _AddWishItemState extends State<AddWishItemPage> {
     if (_wishItemInputController.text.length > 0) {
       wishItem = WishItemModel(
         item: _wishItemInputController.text,
-        price: _wishItemPriceInputController.text,
+        price: int.parse(_wishItemPriceInputController.text),
         url: _wishItemURLInputController.text,
       );
       // テキストボックスを初期化

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'package:saifu/wish_item_model.dart';
+
+import 'package:intl/intl.dart';
 
 class WishListPage extends StatefulWidget {
   WishListPage({Key key, this.title}) : super(key: key);
@@ -11,10 +14,12 @@ class WishListPage extends StatefulWidget {
 }
 
 class _WishListPageState extends State<WishListPage> {
+  final formatter = NumberFormat("#,###");
+
   // WishItemの一覧リスト変数を用意
   List<WishItemModel> wishItemList = [
-    WishItemModel(item: 'サメマゲドン', price: '3300'),
-    WishItemModel(item: '単位', price: '10000'),
+    WishItemModel(item: 'サメマゲドン', price: 3300),
+    WishItemModel(item: '単位', price: 10000),
   ];
 
   @override
@@ -45,60 +50,48 @@ class _WishListPageState extends State<WishListPage> {
   // 欲しい物リストのアイテム
   Widget _wishListItem(index) {
     return Container(
+      height: 70,
       // Itemのボーダー線
-      decoration: new BoxDecoration(
-          border: new Border(bottom: BorderSide(width: 1.0, color: Colors.grey))
+      decoration: const BoxDecoration(
+          border: const Border(bottom: BorderSide(width: 1.0, color: Colors.grey))
       ),
       child: Row(
         children: [
           Expanded(
             flex: 3,
-            child: Container(
-              // 要素の幅を確認するための背景色
-              // color: Colors.blue,
-              margin: EdgeInsets.all(10.0),
-              child:Text(
-                wishItemList[index].item,
-                style: TextStyle(
-                    color:Colors.black,
-                    fontSize: 18.0
-                ),
+            child: Text(
+              wishItemList[index].item,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.grey.shade700,
+                  fontSize: 20.0
               ),
             ),
           ),
           Expanded(
-            flex: 3,
-            child: Container(
-              // 要素の幅を確認するための背景色
-              // color: Colors.red,
-              margin: EdgeInsets.all(10.0),
-              child:Text(
-                '￥' + wishItemList[index].price,
-                style: TextStyle(
-                    color:Colors.black,
-                    fontSize: 18.0
-                ),
+            flex: 2,
+            child: Text(
+              '￥' + formatter.format(wishItemList[index].price),
+              style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 22.0
               ),
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              child: SizedBox(
-                // SizedBoxでボタンのサイズを指定
-                height: 60,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    // ボタンの背景色を透明化
-                    primary: Colors.red.withOpacity(0.0),
-                    shadowColor: Colors.red.withOpacity(0.0),
-                  ),
-                  child: Icon(Icons.arrow_drop_down, color: Colors.black),
-                  onPressed: () {
-                    // ボタンの処理
-                  },
-                ),
+          SizedBox(
+            // SizedBoxでボタンのサイズを指定
+            width: 70,
+            height: 70,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                // ボタンの背景色を透明化
+                primary: Colors.red.withOpacity(0.0),
+                shadowColor: Colors.red.withOpacity(0.0),
               ),
+              child: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600, size: 40,),
+              onPressed: () {
+                // ボタンの処理
+              },
             ),
           ),
         ],
