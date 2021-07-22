@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+
 import 'package:saifu/add_wish_item.dart';
 import 'package:saifu/budget.dart';
 import 'package:saifu/enter_data.dart';
@@ -8,7 +10,13 @@ import 'package:saifu/wish_list.dart';
 import 'package:saifu/setting.dart';
 import 'package:saifu/home.dart';
 
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+
   runApp(MyApp());
 }
 
@@ -19,7 +27,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       //右上デバッグを消すやつ
       debugShowCheckedModeBanner: false,
-
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -51,6 +58,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  BannerAd _bannerAd;
+  bool _isAdLoaded = false;
+
   int _selectedIndex = 0;
 
   //画面のリストを作成 (ここで切り替え先を指定する）
@@ -69,20 +79,56 @@ class _MyHomePageState extends State<MyHomePage> {
     Text('設定'),
   ];
 
-  void _onTap(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  @override
+  void initState(){
+    super.initState();
+
+    // 広告の初期化
+    _bannerAd = BannerAd(
+      adUnitId: Platform.isAndroid ?
+          'ca-app-pub-3940256099942544/6300978111' : 'ca-app-pub-3940256099942544/2934735716',
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (_){
+          setState(() {
+            _isAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad,error){
+          ad.dispose();
+          print('Ad load failed (code=${error.code} message=${error.message})');
+        },
+      ),
+    );
+    _bannerAd.load();
   }
 
-  //本体
+  @override
+  void dispose(){
+    //　広告を削除
+    _bannerAd.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: _pageTitle[_selectedIndex],
       ),
-      body: _pageList[_selectedIndex],
+      body: Column(
+        children: [
+          Expanded(child: _pageList[_selectedIndex]),
+          _isAdLoaded ? Container(
+            child: AdWidget(ad: _bannerAd),
+            width: _bannerAd.size.width.toDouble(),
+            height: _bannerAd.size.height.toDouble(),
+            alignment: Alignment.center,
+          ) : Container(),
+        ],
+      ),
+
       bottomNavigationBar: BottomNavigationBar(
         // ここを変えたらアイコンとか文字とか変えられる
         // Icon（Icons.***) でいろいろアイコンが出せますよ～
@@ -107,7 +153,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
-        onTap: _onTap,
+        onTap: (index){
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
       ),
     );
   }
