@@ -3,10 +3,19 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:io';
+
 import 'package:saifu/add_wish_item.dart';
+import 'package:saifu/budget.dart';
+import 'package:saifu/enter_data.dart';
 import 'package:saifu/log.dart';
-import 'package:saifu/page.dart';
+import 'package:saifu/shortcut.dart';
 import 'package:saifu/wish_list.dart';
+import 'package:saifu/setting.dart';
+import 'package:saifu/home.dart';
+
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 
 // バックグラウンドで通知を使用するやつ
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -25,27 +34,30 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 );
 
 // 通知用のパッケージ導入
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+
   await Firebase.initializeApp();
+
   //名前付きのトップレベル関数として設定
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   //FCMチャンネルをオーバーライドし通知を有効にする
   await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+
   // iOSのフォアグラウンド通知の表示オプションを更新する
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
     badge: true,
     sound: true,
   );
+
   await DotEnv().load('.env');
+
   runApp(MyApp());
 }
 
@@ -56,7 +68,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       //右上デバッグを消すやつ
       debugShowCheckedModeBanner: false,
-
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -67,6 +78,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (_) => MyHomePage(),
         '/add': (_) => AddWishItemPage(),
+        '/shortcut': (_) => ShortcutPage(),
+        '/budget': (_) => BudgetPage(),
+        '/enter': (_) => EnterDataPage(),
       },
     );
   }
@@ -86,12 +100,32 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
+  BannerAd _bannerAd;
+  bool _isAdLoaded = false;
+
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
-  // 通知のあれこれ
+  int _selectedIndex = 0;
+
+  //画面のリストを作成 (ここで切り替え先を指定する）
+  static List<Widget> _pageList = [
+    HomePage(),
+    WishListPage(),
+    Log(pannelColor: Colors.cyan, title: '履歴'),
+    Setting(pannelColor: Colors.cyan, title: '設定'),
+  ];
+
+  // 一番上のタイトルを変えるとこ
+  static List<Widget> _pageTitle = [
+    Text('ホーム'),
+    Text('欲しい物リスト'),
+    Text('履歴'),
+    Text('設定'),
+  ];
+
   @override
   void initState() {
+    // 通知のあれこれ
     /// iOS用 PUSH通知の許可確認
     _firebaseMessaging.requestPermission();
 
@@ -122,39 +156,55 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
     });
+
+    // 広告の初期化
+    _bannerAd = BannerAd(
+      adUnitId: Platform.isAndroid ?
+      'ca-app-pub-3940256099942544/6300978111' : 'ca-app-pub-3940256099942544/2934735716',
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (_){
+          setState(() {
+            _isAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad,error){
+          ad.dispose();
+          print('Ad load failed (code=${error.code} message=${error.message})');
+        },
+      ),
+    );
+    _bannerAd.load();
+
     super.initState();
   }
 
-//画面のリストを作成 (ここで切り替え先を指定する）
-  static List<Widget> _pageList = [
-    CustomPage(pannelColor: Colors.cyan, title: 'ホーム'),
-    WishListPage(),
-    Log(pannelColor: Colors.cyan, title: '履歴'),
-    CustomPage(pannelColor: Colors.cyan, title: '設定'),
-  ];
-
-// 一番上のタイトルを変えるとこ
-  static List<Widget> _pageTitle = [
-    Text('ホーム'),
-    Text('欲しい物リスト'),
-    Text('履歴'),
-    Text('設定'),
-  ];
-
-  void _onTap(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  @override
+  void dispose(){
+    //　広告を削除
+    _bannerAd.dispose();
+    super.dispose();
   }
 
-//本体
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: _pageTitle[_selectedIndex],
       ),
-      body: _pageList[_selectedIndex],
+      body: Column(
+        children: [
+          Expanded(child: _pageList[_selectedIndex]),
+          _isAdLoaded ? Container(
+            child: AdWidget(ad: _bannerAd),
+            width: _bannerAd.size.width.toDouble(),
+            height: _bannerAd.size.height.toDouble(),
+            alignment: Alignment.center,
+          ) : Container(),
+        ],
+      ),
+
       bottomNavigationBar: BottomNavigationBar(
         // ここを変えたらアイコンとか文字とか変えられる
         // Icon（Icons.***) でいろいろアイコンが出せますよ～
@@ -179,7 +229,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
-        onTap: _onTap,
+        onTap: (index){
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
       ),
     );
   }
