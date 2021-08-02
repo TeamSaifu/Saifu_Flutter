@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:saifu/wish_item_model.dart';
 
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class WishListPage extends StatefulWidget {
   WishListPage({Key key, this.title}) : super(key: key);
@@ -64,18 +65,27 @@ class _WishListItemState extends State<WishListItem> {
 
   bool _appearButtons = false;
 
-  Widget _functionButton({@required IconData icon}) {
+  void _launchURL() async {
+    const url = "http://google.com";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not Launch $url';
+    }
+  }
+
+  Widget _functionButton({@required IconData icon, @required Function function}) {
     return SizedBox(
-      width: 70,
-      height: 70,
+      width: 60,
+      height: 60,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           primary: Colors.red.withOpacity(0.0),
           shadowColor: Colors.red.withOpacity(0.0),
         ),
-        child: Icon(icon, color: Colors.grey.shade600, size: 40,),
+        child: Icon(icon, color: Colors.grey.shade600, size: 30,),
         onPressed: () {
-
+          function();
         },
       ),
     );
@@ -136,56 +146,13 @@ class _WishListItemState extends State<WishListItem> {
           _appearButtons? Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _functionButton(icon: Icons.home),
-              _functionButton(icon: Icons.settings),
-              _functionButton(icon: Icons.work),
+              _functionButton(icon: Icons.home, function: _launchURL),
+              _functionButton(icon: Icons.settings, function: _launchURL),
+              _functionButton(icon: Icons.work, function: _launchURL),
             ],
           ) : Container(),
         ],
       ),
-      // child: Row(
-      //   children: [
-      //     Expanded(
-      //       flex: 3,
-      //       child: Text(
-      //         widget.item,
-      //         textAlign: TextAlign.center,
-      //         style: TextStyle(
-      //             color: Colors.grey.shade700,
-      //             fontSize: 20.0
-      //         ),
-      //       ),
-      //     ),
-      //     Expanded(
-      //       flex: 2,
-      //       child: Text(
-      //         '￥' + formatter.format(widget.price),
-      //         style: TextStyle(
-      //             color: Colors.grey.shade600,
-      //             fontSize: 22.0
-      //         ),
-      //       ),
-      //     ),
-      //     SizedBox(
-      //       // SizedBoxでボタンのサイズを指定
-      //       width: 70,
-      //       height: 70,
-      //       child: ElevatedButton(
-      //         style: ElevatedButton.styleFrom(
-      //           // ボタンの背景色を透明化
-      //           primary: Colors.red.withOpacity(0.0),
-      //           shadowColor: Colors.red.withOpacity(0.0),
-      //         ),
-      //         child: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600, size: 40,),
-      //         onPressed: () {
-      //           setState(() {
-      //             _appearButtons = !_appearButtons;
-      //           });
-      //         },
-      //       ),
-      //     ),
-      //   ],
-      // ),
     );
   }
 }
