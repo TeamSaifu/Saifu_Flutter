@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:saifu/wish_item_model.dart';
+import 'package:saifu/add_wish_item.dart';
 
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -51,10 +52,11 @@ class _WishListPageState extends State<WishListPage> {
 
 // 欲しい物リストのアイテム
 class WishListItem extends StatefulWidget {
-  WishListItem({Key key, @required this.item, @required this.price}) : super(key: key);
+  WishListItem({Key key, @required this.item, @required this.price, @required this.url}) : super(key: key);
 
   final String item;
   final int price;
+  final String url;
 
   @override
   _WishListItemState createState() => _WishListItemState();
@@ -65,12 +67,28 @@ class _WishListItemState extends State<WishListItem> {
 
   bool _appearButtons = false;
 
-  void _launchURL() async {
-    const url = "http://google.com";
+  void _launchURL({String url}) async {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'Could not Launch $url';
+    }
+  }
+
+  void _editWishItem({String item, int price, String url}) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context)=>AddWishItemPage(
+        title: "編集",
+        item: item,
+        price: price,
+        url: url,
+      ))
+    );
+    if (result != null) {
+      setState(() {
+        // _wishItemList.add(result);
+      });
     }
   }
 
@@ -146,9 +164,9 @@ class _WishListItemState extends State<WishListItem> {
           _appearButtons? Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _functionButton(icon: Icons.home, function: _launchURL),
-              _functionButton(icon: Icons.settings, function: _launchURL),
-              _functionButton(icon: Icons.work, function: _launchURL),
+              _functionButton(icon: Icons.language, function: () => _launchURL(url: "http://google.com")),
+              _functionButton(icon: Icons.add_shopping_cart, function: () => _launchURL(url: "http://qiita.com")),
+              _functionButton(icon: Icons.create_sharp, function: () => _editWishItem(item: widget.item, price: widget.price, url: widget.url)),
             ],
           ) : Container(),
         ],

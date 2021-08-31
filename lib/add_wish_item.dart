@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:saifu/wish_item_model.dart';
 
 class AddWishItemPage extends StatefulWidget {
-  AddWishItemPage({Key key, this.title}) : super(key: key);
+  AddWishItemPage({Key key, this.title, this.item, this.price, this.url}) : super(key: key);
 
   final String title;
+  final String item;
+  final int price;
+  final String url;
 
   @override
   _AddWishItemState createState() => _AddWishItemState();
@@ -22,9 +25,12 @@ class _AddWishItemState extends State<AddWishItemPage> {
   // コントローラーの初期化
   void initState() {
     super.initState();
-    _wishItemInputController = TextEditingController();
-    _wishItemPriceInputController = TextEditingController();
-    _wishItemURLInputController = TextEditingController();
+    _wishItemInputController = widget.item == null?
+      TextEditingController() : TextEditingController(text: widget.item);
+    _wishItemPriceInputController = widget.price == null?
+      TextEditingController() : TextEditingController(text: widget.price.toString());
+    _wishItemURLInputController = widget.price == null?
+      TextEditingController() : TextEditingController(text: widget.url);
   }
 
   // statefulオブジェクトが削除されるときに、参照を削除してくれる
@@ -40,7 +46,7 @@ class _AddWishItemState extends State<AddWishItemPage> {
     if (_wishItemInputController.text.length > 0) {
       wishItem = WishItemModel(
         item: _wishItemInputController.text,
-        price: int.parse(_wishItemPriceInputController.text),
+        price: _wishItemPriceInputController.text == '' ? 0 : int.parse(_wishItemPriceInputController.text),
         url: _wishItemURLInputController.text,
       );
       // テキストボックスを初期化
@@ -64,7 +70,7 @@ class _AddWishItemState extends State<AddWishItemPage> {
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text('新規登録'),
+        title: Text(widget.title == null ? '新規登録' : widget.title),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.done),
