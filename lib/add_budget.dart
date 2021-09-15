@@ -15,9 +15,6 @@ class AddBudgetPage extends StatefulWidget {
   final Budget budget;
   final int sign;
 
-  TextEditingController _budgetNameController;
-  TextEditingController _budgetPriceController;
-
   @override
   _AddBudgetState createState() => _AddBudgetState();
 }
