@@ -2,24 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:saifu/shortcut_model.dart';
+import 'package:saifu/model/log.dart';
+import 'package:saifu/model/budget.dart';
+import 'package:saifu/db/log_repository.dart';
+import 'package:saifu/db/budget_repository.dart';
 
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-
-// 表示部分のモデル
-class DisplayModel {
-  String title;
-  int price;
-  int balance;
-
-  DisplayModel({
-    @required this.title,
-    @required this.price,
-    this.balance,
-  });
-}
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -34,14 +25,29 @@ class _HomeState extends State<HomePage> {
   // 三桁ごとにカンマを入れるフォーマット
   final formatter = NumberFormat("#,###");
 
+  DateTime now = DateTime.now();
+  int get lastMonthDayNum => DateTime(now.year, now.month + 1, 0).day;
+
   // 現在の年月日と年月
   static String _nowDate;
   static String _nowMonth;
 
   // 表示リスト
-  List<DisplayModel> _displayList = [];
+  List<String> _titleList = [];
   // 表示リストのインデックス
   int _displayIndex = 0;
+
+  double _percent = 0;
+
+  List<PayLog> _logList;
+  List<Budget> _budgetList;
+  List<PayLog> _todayLogList;
+
+  Future _initLoadData() async {
+    _logList = await LogRepository.getAll();
+    _budgetList = await BudgetRepository.getAll();
+    _todayLogList = await LogRepository.getToday();
+  }
 
   //アプリ起動時に一度だけ実行される
   @override
@@ -51,13 +57,13 @@ class _HomeState extends State<HomePage> {
     // 日付を取得し表示リストを初期化
     initializeDateFormatting('ja');
     setState(() {
-      _nowDate = new DateFormat.yMMMd('ja').format(DateTime.now()).toString();
-      _nowMonth = new DateFormat.yMMM('ja').format(DateTime.now()).toString();
-      _displayList.addAll([
-        DisplayModel(title: '$_nowDate', price: 7120),
-        DisplayModel(title: '$_nowDateの予算', price: 1130, balance: 1650),
-        DisplayModel(title: '$_nowDateまでの予算', price: 4430, balance: 4950),
-        DisplayModel(title: '$_nowMonthの予算', price: 50630, balance: 51150),
+      _nowDate = new DateFormat.yMMMd('ja').format(now).toString();
+      _nowMonth = new DateFormat.yMMM('ja').format(now).toString();
+      _titleList.addAll([
+        '$_nowDate',
+        '$_nowDateの予算',
+        '$_nowDateまでの予算',
+        '$_nowMonthの予算',
       ]);
     });
   }
@@ -197,56 +203,99 @@ class _HomeState extends State<HomePage> {
 
       children: <Widget>[
         // 表示部分
-        GestureDetector(
-          // 子WidgetにTap処理を付ける
-          onTap: () {
-            setState(() {
-              if(_displayIndex == 3) {
-                _displayIndex = 0;
-              } else {
-                _displayIndex += 1;
+        FutureBuilder(
+          future: _initLoadData(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              int displaytext1;
+              int displaytext2;
+              int spendDay = 0;
+              int spendMonth = 0;
+              int budget = 0;
+
+              if (_logList != null && _budgetList != null && _todayLogList != null) {
+                _logList.forEach((element) {
+                  spendMonth += element.price * element.sign;
+                });
+                _budgetList.forEach((element) {
+                  budget += element.price * element.sign;
+                });
+                _todayLogList.forEach((element) {
+                  spendDay += element.price * element.sign;
+                });
+                switch(_displayIndex){
+                  case 0:
+                    displaytext1 = spendMonth;
+                    break;
+                  case 1:
+                    displaytext1 = spendDay;
+                    displaytext2 = (budget / lastMonthDayNum).floor();
+                    break;
+                  case 2:
+                    displaytext1 = spendMonth;
+                    displaytext2 = ((budget / lastMonthDayNum) * now.day).floor();
+                    break;
+                  case 3:
+                    displaytext1 = spendMonth;
+                    displaytext2 = budget;
+                    break;
+                }
+                displaytext2 == null ? _percent = 0 : _percent = displaytext1 * -1 / displaytext2;
               }
-            });
+              return GestureDetector (
+                // 子WidgetにTap処理を付ける
+                onTap: () {
+                  setState(() {
+                    if(_displayIndex == 3) {
+                      _displayIndex = 0;
+                    } else {
+                      _displayIndex += 1;
+                    }
+                  });
+                },
+                child: SizedBox(
+                  height: screenHeight * 0.2,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _textLabel(
+                        contentWidth: screenWidth * 0.8,
+                        text: _titleList[_displayIndex],
+                        color: Colors.grey.shade600
+                      ),
+                      _textLabel(
+                        contentWidth: screenWidth * 0.8,
+                        text: displaytext1 != null ? '￥' + formatter.format(displaytext1 * -1) : '￥0',
+                        fontSize: 45.0,
+                        color: Colors.cyan
+                      ),
+                      displaytext2 == null ? Container() : _textLabel(
+                        contentWidth: screenWidth * 0.8,
+                        text: '/￥' + formatter.format(displaytext2),
+                        color: Colors.cyan,
+                        textAlign: TextAlign.right
+                      ),
+                      // 割合ゲージ
+                      SizedBox(
+                        width: screenWidth * 0.8,
+
+                        child: LinearPercentIndicator(
+                          animation: true,                              // アニメーション
+                          animationDuration: 500,                       // アニメーションの速さ
+                          lineHeight: screenHeight * 0.03,              // ゲージの高さ
+                          percent: _percent > 1 ? 1.0 : _percent,                                 // 割合
+                          linearStrokeCap: LinearStrokeCap.roundAll,    // ゲージの角の丸み
+                          progressColor: _percent > 1 ? Colors.redAccent : Colors.cyan,                   // ゲージの色
+                        ),
+                      ),
+                    ],
+                  )
+                )
+              );
+            }
           },
-          child: SizedBox(
-            height: screenHeight * 0.15,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _textLabel(
-                    contentWidth: screenWidth * 0.8,
-                    text: _displayList[_displayIndex].title,
-                    color: Colors.grey.shade600
-                ),
-                _textLabel(
-                    contentWidth: screenWidth * 0.8,
-                    text: '￥' + formatter.format(_displayList[_displayIndex].price),
-                    fontSize: 45.0,
-                    color: Colors.cyan
-                ),
-                _displayList[_displayIndex].balance == null ? Container() : _textLabel(
-                    contentWidth: screenWidth * 0.8,
-                    text: '/￥' + formatter.format(_displayList[_displayIndex].balance),
-                    color: Colors.cyan,
-                    textAlign: TextAlign.right
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        // 割合ゲージ
-        SizedBox(
-          width: screenWidth * 0.8,
-
-          child: LinearPercentIndicator(
-            animation: true,                              // アニメーション
-            animationDuration: 500,                       // アニメーションの速さ
-            lineHeight: screenHeight * 0.03,              // ゲージの高さ
-            percent: 0.6,                                 // 割合
-            linearStrokeCap: LinearStrokeCap.roundAll,    // ゲージの角の丸み
-            progressColor: Colors.cyan,                   // ゲージの色
-          ),
         ),
 
         // データ入力ボタン
