@@ -1,5 +1,20 @@
 import 'package:flutter/material.dart';
 
+import 'package:saifu/db/log_repository.dart';
+
+import 'package:intl/intl.dart';
+
+/*
+このページの未実装項目
+- or +アイコンを押すと支出と収入が切り替わる
+日付を押すとカレンダーが出て支払日を選択できる
+カテゴリーを押すとカテゴリー一覧が出てカテゴリーを選択できる
+メモの追加
+画像選択
+写真を撮ってその画像を使用
+ショートカットに登録できる
+ */
+
 class EnterDataPage extends StatefulWidget {
   EnterDataPage({Key key, this.title}) : super(key: key);
 
@@ -10,6 +25,35 @@ class EnterDataPage extends StatefulWidget {
 }
 
 class _EnterDataState extends State<EnterDataPage> {
+  int sign = -1;
+  DateTime payDay = DateTime.now();
+  int category = 0;
+  String name = '';
+  String picture = '';
+  int splitCount = 1;
+
+  TextEditingController _priceInputController;
+
+  void initState() {
+    super.initState();
+    _priceInputController = TextEditingController();
+  }
+
+  void dispose() {
+    super.dispose();
+    _priceInputController.dispose();
+  }
+
+  void _changePayDay({int days, int sign, bool today}) {
+    setState(() {
+      if (today) {
+        payDay = DateTime.now();
+      } else {
+        payDay = payDay.add(Duration(days: days) * sign);
+      }
+    });
+  }
+
   // 区切り線
   Widget _divider({double padding = 0.0}) {
     return Divider(
@@ -31,6 +75,7 @@ class _EnterDataState extends State<EnterDataPage> {
     double padding = 0.0,
     String text,
     double fontSize = 20,
+    Function function
   }) {
     var buttonWidth = contentWidth / num * (1 - padding);
     var paddingWidth = contentWidth / num * padding / 2;
@@ -56,7 +101,7 @@ class _EnterDataState extends State<EnterDataPage> {
 
           // ボタン処理
           onPressed: () {
-
+            if (function != null) function();
           },
         ),
       )
@@ -84,7 +129,19 @@ class _EnterDataState extends State<EnterDataPage> {
           IconButton(
             icon: Icon(Icons.done),
             onPressed: () {
-              // ボタン処理
+              if (_priceInputController.text.length > 0) {
+                LogRepository.create(
+                  price: int.parse(_priceInputController.text),
+                  sign: sign,
+                  payDay: payDay,
+                  name: name,
+                  category: category,
+                  picture: picture,
+                  splitCount: splitCount
+                );
+                _priceInputController.clear();
+                Navigator.of(context).pop();
+              }
             },
           ),
         ],
@@ -103,11 +160,8 @@ class _EnterDataState extends State<EnterDataPage> {
                 mainAxisSize: MainAxisSize.min,
 
                 children: [
-                  Icon(
-                    Icons.remove,
-                    color: Colors.redAccent,
-                    size: 40.0,
-                  ),
+                  sign == -1 ? Icon(Icons.remove, color: Colors.redAccent, size: 40.0) :
+                    Icon(Icons.add, color: Colors.blueAccent, size: 40.0),
 
                   Text(
                     '￥',
@@ -121,6 +175,8 @@ class _EnterDataState extends State<EnterDataPage> {
                     width: screenWidth * 0.5,
 
                     child: TextField(
+                      controller: _priceInputController,
+                      keyboardType: TextInputType.number,
                       maxLength: 9,
                       style: TextStyle(
                         fontSize: 40.0,
@@ -143,7 +199,7 @@ class _EnterDataState extends State<EnterDataPage> {
               padding: EdgeInsets.symmetric(vertical: 5.0),
 
               child: Text(
-                '2021/05/01(今日)',
+                DateFormat('yyy/MM/dd').format(payDay),
                 style: TextStyle(
                     color: Colors.cyan,
                     fontSize: 40.0
@@ -158,11 +214,46 @@ class _EnterDataState extends State<EnterDataPage> {
                 mainAxisSize: MainAxisSize.min,
 
                 children: [
-                  _textButton(contentWidth: screenWidth * 0.8, num: 5, padding: 0.1, text: '-7', fontSize: 17),
-                  _textButton(contentWidth: screenWidth * 0.8, num: 5, padding: 0.1, text: '-1', fontSize: 17),
-                  _textButton(contentWidth: screenWidth * 0.8, num: 5, padding: 0.1, text: '今日', fontSize: 13),
-                  _textButton(contentWidth: screenWidth * 0.8, num: 5, padding: 0.1, text: '+1', fontSize: 17),
-                  _textButton(contentWidth: screenWidth * 0.8, num: 5, padding: 0.1, text: '+7', fontSize: 17),
+                  _textButton(
+                    contentWidth: screenWidth * 0.8,
+                    num: 5,
+                    padding: 0.1,
+                    text: '-7',
+                    fontSize: 17,
+                    function: () => _changePayDay(days: 7, sign: -1, today: false)
+                  ),
+                  _textButton(
+                    contentWidth: screenWidth * 0.8,
+                    num: 5,
+                    padding: 0.1,
+                    text: '-1',
+                    fontSize: 17,
+                    function: () => _changePayDay(days: 1, sign: -1, today: false)
+                  ),
+                  _textButton(
+                    contentWidth: screenWidth * 0.8,
+                    num: 5,
+                    padding: 0.1,
+                    text: '今日',
+                    fontSize: 13,
+                    function: () => _changePayDay(today: true)
+                  ),
+                  _textButton(
+                    contentWidth: screenWidth * 0.8,
+                    num: 5,
+                    padding: 0.1,
+                    text: '+1',
+                    fontSize: 17,
+                    function: () => _changePayDay(days: 1, sign: 1, today: false)
+                  ),
+                  _textButton(
+                    contentWidth: screenWidth * 0.8,
+                    num: 5,
+                    padding: 0.1,
+                    text: '+7',
+                    fontSize: 17,
+                    function: () => _changePayDay(days: 7, sign: 1, today: false)
+                  ),
                 ],
               ),
             ),
