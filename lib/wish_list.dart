@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:saifu/wish_item_model.dart';
+
+import 'package:saifu/add_wish_item.dart';
+import 'package:saifu/db/wish_item_repository.dart';
+import 'package:saifu/model/wish_item.dart';
+
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class WishListPage extends StatefulWidget {
   WishListPage({Key key, this.title}) : super(key: key);
@@ -11,96 +17,165 @@ class WishListPage extends StatefulWidget {
 }
 
 class _WishListPageState extends State<WishListPage> {
-  // WishItemの一覧リスト変数を用意
-  List<WishItemModel> wishItemList = [
-    WishItemModel(item: 'サメマゲドン', price: '3300'),
-    WishItemModel(item: '単位', price: '10000'),
-  ];
+  final formatter = NumberFormat("#,###");
+
+  bool _reload = false;
+
+  _refresh(bool result) {
+    setState(() {
+      _reload = result;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView.builder(
-        // リストの長さを計算
-        itemCount: wishItemList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return _wishListItem(index);
-        },
+      body: FutureBuilder(
+        future: WishItemRepository.getAll(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            List<WishItem> _wishItemList = snapshot.data;
+            return ListView.builder(
+              itemCount: _wishItemList != null ? _wishItemList.length : 0,
+              itemBuilder: (BuildContext context, int index) {
+                return WishListItem(wishItem: _wishItemList[index], notifyParent: _refresh);
+              },
+            );
+          }
+        }
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () async {
-          // resultにAddWishItemページの入力値が返ってくる
           final result = await Navigator.of(context).pushNamed('/add');
           if (result != null) {
             setState(() {
-              wishItemList.add(result);
+              _reload = result;
             });
           }
         },
       ),
     );
   }
+}
 
-  // 欲しい物リストのアイテム
-  Widget _wishListItem(index) {
+// 欲しい物リストのアイテム
+class WishListItem extends StatefulWidget {
+  WishListItem({Key key, @required this.wishItem, @required this.notifyParent}) : super(key: key);
+
+  final WishItem wishItem;
+  final Function(bool) notifyParent;
+
+  @override
+  _WishListItemState createState() => _WishListItemState();
+}
+
+class _WishListItemState extends State<WishListItem> {
+  final formatter = NumberFormat("#,###");
+
+  bool _appearButtons = false;
+
+  void _launchURL({String url}) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not Launch $url';
+    }
+  }
+
+  void _editWishItem() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context)=>AddWishItemPage(
+        title: "編集",
+        wishItem: widget.wishItem,
+      ))
+    );
+    if (result != null) {
+      widget.notifyParent(result);
+    }
+
+  }
+
+  Widget _functionButton({@required IconData icon, @required Function function}) {
+    return SizedBox(
+      width: 60,
+      height: 60,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: Colors.red.withOpacity(0.0),
+          shadowColor: Colors.red.withOpacity(0.0),
+        ),
+        child: Icon(icon, color: Colors.grey.shade600, size: 30,),
+        onPressed: () {
+          function();
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       // Itemのボーダー線
-      decoration: new BoxDecoration(
-          border: new Border(bottom: BorderSide(width: 1.0, color: Colors.grey))
+      decoration: const BoxDecoration(
+          border: const Border(bottom: BorderSide(width: 1.0, color: Colors.grey))
       ),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            flex: 3,
-            child: Container(
-              // 要素の幅を確認するための背景色
-              // color: Colors.blue,
-              margin: EdgeInsets.all(10.0),
-              child:Text(
-                wishItemList[index].item,
-                style: TextStyle(
-                    color:Colors.black,
-                    fontSize: 18.0
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: Text(
+                  widget.wishItem.name,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontSize: 20.0
+                  ),
                 ),
               ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Container(
-              // 要素の幅を確認するための背景色
-              // color: Colors.red,
-              margin: EdgeInsets.all(10.0),
-              child:Text(
-                '￥' + wishItemList[index].price,
-                style: TextStyle(
-                    color:Colors.black,
-                    fontSize: 18.0
+              Expanded(
+                flex: 2,
+                child: Text(
+                  '￥' + formatter.format(widget.wishItem.price),
+                  style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 22.0
+                  ),
                 ),
               ),
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              child: SizedBox(
+              SizedBox(
                 // SizedBoxでボタンのサイズを指定
-                height: 60,
+                width: 70,
+                height: 70,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     // ボタンの背景色を透明化
                     primary: Colors.red.withOpacity(0.0),
                     shadowColor: Colors.red.withOpacity(0.0),
                   ),
-                  child: Icon(Icons.arrow_drop_down, color: Colors.black),
+                  child: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600, size: 40,),
                   onPressed: () {
-                    // ボタンの処理
+                    setState(() {
+                      _appearButtons = !_appearButtons;
+                    });
                   },
                 ),
               ),
-            ),
+            ],
           ),
+          _appearButtons? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _functionButton(icon: Icons.language, function: () => _launchURL(url: widget.wishItem.url)),
+              _functionButton(icon: Icons.add_shopping_cart, function: () => {}),
+              _functionButton(icon: Icons.create_sharp, function: () => _editWishItem()),
+            ],
+          ) : Container(),
         ],
       ),
     );

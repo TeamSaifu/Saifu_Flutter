@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'package:saifu/db/log_repository.dart';
+import 'package:saifu/model/log.dart';
+
+import 'package:intl/intl.dart';
+
 class Log extends StatelessWidget {
-  // 汎用的なページ 下のやつ渡すとなんか出る
-  // pannelColor : 画面色
-  // title : 真ん中の文字
   final Color pannelColor;
   final String title;
 
@@ -11,28 +13,33 @@ class Log extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //各データ用配列
-    var icon = ["#", "%", "&"];
-    var date = ["03.23", "03.24", "04.01"];
-    var name = ["お弁当", "家電製品購入", "ゲーム機"];
-    var price = ["¥620", "¥2,300,000", "¥48,000"];
 
     return MaterialApp(
-        //右上デバッグを消すやつ
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-            body: ListView.builder(
-          // listの上限を設定
-          itemCount: icon.length,
-          itemBuilder: (BuildContext context, int index) {
-            return _messageItem(
-                icon[index], date[index], price[index], name[index]);
+      //右上デバッグを消すやつ
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: FutureBuilder(
+          future: LogRepository.getAll(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              List<PayLog> logList = snapshot.data;
+              return ListView.builder(
+                itemCount: logList != null ? logList.length : 0,
+                itemBuilder: (BuildContext context, int index) {
+                  return _logItem(logList[index], index);
+                }
+              );
+            }
           },
-        )));
+        ),
+      )
+    );
   }
 }
 
-Widget _messageItem(String icon, String date, String price, String name) {
+Widget _logItem(PayLog log, int index) {
   // 項目をスワイプすると削除する
   return Dismissible(
     key: Key("some id"),
@@ -51,48 +58,51 @@ Widget _messageItem(String icon, String date, String price, String name) {
     // 一行ずつリスト表示
     // flexで横の割合を当てる https://qiita.com/kalupas226/items/5aa41ca409730606000f
     // Containerで各項目の設定をする https://mcommit.hatenadiary.com/entry/2020/01/07/003553
-
     child: Card(
-        child: Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: Container(
-            child: Text(
-              date,
-              style: TextStyle(fontSize: 20),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Container(
+              child: Text(
+                DateFormat('MM/dd').format(log.payDate),
+                style: TextStyle(fontSize: 20),
+              ),
             ),
           ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Container(
+          Expanded(
+            flex: 1,
+            child: Container(
               padding: EdgeInsets.only(left: 15),
               child: Text(
-                icon,
+                log.picture,
                 style: TextStyle(fontSize: 20),
-              )),
-        ),
-        Expanded(
-          flex: 3,
-          child: Container(
+              )
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Container(
               padding: EdgeInsets.only(right: 30),
               child: Text(
-                name,
+                log.name,
                 style: TextStyle(fontSize: 20),
                 textAlign: TextAlign.right,
-              )),
-        ),
-        Expanded(
-          flex: 2,
-          child: Container(
+              )
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Container(
               child: Text(
-            price,
-            style: TextStyle(fontSize: 20),
-            textAlign: TextAlign.right,
-          )),
-        ),
-      ],
-    )),
+                log.price.toString(),
+                style: TextStyle(fontSize: 20),
+                textAlign: TextAlign.right,
+              )
+            ),
+          ),
+        ],
+      )
+    ),
   );
 }

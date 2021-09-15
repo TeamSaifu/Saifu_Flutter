@@ -25,7 +25,7 @@ class Setting extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.monetization_on),
               title: Text("予算入力"),
-              onTap: () {},
+              onTap: () async {await Navigator.of(context).pushNamed('/budget');},
             ),
             Divider(
               thickness: 1.2,

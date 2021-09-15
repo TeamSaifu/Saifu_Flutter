@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:saifu/wish_item_model.dart';
+
+import 'package:saifu/db/wish_item_repository.dart';
+import 'package:saifu/model/wish_item.dart';
+
+/*
+このページの未実装項目
+写真ボタンを押してライブラリから画像を選択できる
+ */
 
 class AddWishItemPage extends StatefulWidget {
-  AddWishItemPage({Key key, this.title}) : super(key: key);
+  AddWishItemPage({Key key, this.title, this.wishItem}) : super(key: key);
 
   final String title;
+  final WishItem wishItem;
 
   @override
   _AddWishItemState createState() => _AddWishItemState();
 }
 
 class _AddWishItemState extends State<AddWishItemPage> {
-  // WishItemモデルを用意
-  WishItemModel wishItem;
-
   // テキストフィールドのコントローラー宣言
   TextEditingController _wishItemInputController;
   TextEditingController _wishItemPriceInputController;
@@ -22,9 +27,18 @@ class _AddWishItemState extends State<AddWishItemPage> {
   // コントローラーの初期化
   void initState() {
     super.initState();
-    _wishItemInputController = TextEditingController();
-    _wishItemPriceInputController = TextEditingController();
-    _wishItemURLInputController = TextEditingController();
+    if (widget.wishItem == null) {
+      _wishItemInputController = TextEditingController();
+      _wishItemPriceInputController = TextEditingController();
+      _wishItemURLInputController = TextEditingController();
+    } else {
+      _wishItemInputController = widget.wishItem.name == null?
+      TextEditingController() : TextEditingController(text: widget.wishItem.name);
+      _wishItemPriceInputController = widget.wishItem.price == null?
+      TextEditingController() : TextEditingController(text: widget.wishItem.price.toString());
+      _wishItemURLInputController = widget.wishItem.url == null?
+      TextEditingController() : TextEditingController(text: widget.wishItem.url);
+    }
   }
 
   // statefulオブジェクトが削除されるときに、参照を削除してくれる
@@ -35,20 +49,26 @@ class _AddWishItemState extends State<AddWishItemPage> {
     _wishItemURLInputController.dispose();
   }
 
-  void _addWishItem() {
-    // 入力があるときに実行
+  void _insertWishItem() {
     if (_wishItemInputController.text.length > 0) {
-      wishItem = WishItemModel(
-        item: _wishItemInputController.text,
-        price: _wishItemPriceInputController.text,
-        url: _wishItemURLInputController.text,
-      );
-      // テキストボックスを初期化
-      _wishItemInputController.clear();
-      _wishItemPriceInputController.clear();
-      _wishItemURLInputController.clear();
-      // テキストの内容を渡しつつ画面遷移
-      Navigator.of(context).pop(wishItem);
+      if (widget.wishItem == null) {
+        WishItemRepository.create(
+          price: int.parse(_wishItemPriceInputController.text),
+          name: _wishItemInputController.text,
+          url: _wishItemURLInputController.text,
+          picture: '',
+        );
+      } else {
+        WishItemRepository.update(
+          id: widget.wishItem.id,
+          price: int.parse(_wishItemPriceInputController.text),
+          name: _wishItemInputController.text,
+          url: _wishItemURLInputController.text,
+          picture: '',
+        );
+      }
+
+      Navigator.of(context).pop(true);
     }
   }
 
@@ -64,11 +84,11 @@ class _AddWishItemState extends State<AddWishItemPage> {
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text('新規登録'),
+        title: Text(widget.title == null ? '新規登録' : widget.title),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.done),
-            onPressed: _addWishItem,
+            onPressed: _insertWishItem,
           ),
         ],
       ),
@@ -100,6 +120,7 @@ class _AddWishItemState extends State<AddWishItemPage> {
                   width: screenWidth * 0.7,
                   child: TextField(
                     controller: _wishItemPriceInputController,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: '値段',
                     ),
