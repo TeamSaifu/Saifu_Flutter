@@ -276,3 +276,5 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/flutter,windows,macos,androidstudio
 /.idea/libraries/
+/ios/Podfile.lock
+/GoogleService-Info.plist

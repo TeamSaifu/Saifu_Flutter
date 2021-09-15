@@ -1,4 +1,8 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:io';
 
 import 'package:saifu/add_wish_item.dart';
@@ -13,9 +17,46 @@ import 'package:saifu/home.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 
-void main() {
+// バックグラウンドで通知を使用するやつ
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Handling a background message ${message.messageId}");
+}
+
+// 通知用のチャンネルを作成
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel', // id
+  'High Importance Notifications', // title
+  'This channel is used for important notifications.', // description
+  importance: Importance.high,
+  enableVibration: true,
+  playSound: true,
+);
+
+// 通知用のパッケージ導入
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
+
+  await Firebase.initializeApp();
+
+  //名前付きのトップレベル関数として設定
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  //FCMチャンネルをオーバーライドし通知を有効にする
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+
+  // iOSのフォアグラウンド通知の表示オプションを更新する
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  await DotEnv().load('.env');
 
   runApp(MyApp());
 }
@@ -46,9 +87,10 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key, this.title, this.message}) : super(key: key);
 
   final String title;
+  final RemoteMessage message;
 
   // ナビゲーションバー
   // https://dev.classmethod.jp/articles/basic_bottom_navigation_flutter/
@@ -60,6 +102,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   BannerAd _bannerAd;
   bool _isAdLoaded = false;
+
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   int _selectedIndex = 0;
 
@@ -80,13 +124,43 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   @override
-  void initState(){
-    super.initState();
+  void initState() {
+    // 通知のあれこれ
+    /// iOS用 PUSH通知の許可確認
+    _firebaseMessaging.requestPermission();
+
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage message) async {
+      if (message != null) {
+        print(message);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyHomePage(message: message),
+          ),
+        );
+      }
+      // Logcatにtoken表示
+      String token = await FirebaseMessaging.instance.getToken();
+      print("tokena:" + token);
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      print('A new onMessageOpenedApp event was published!');
+      print(message);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MyHomePage(message: message),
+        ),
+      );
+    });
 
     // 広告の初期化
     _bannerAd = BannerAd(
       adUnitId: Platform.isAndroid ?
-          'ca-app-pub-3940256099942544/6300978111' : 'ca-app-pub-3940256099942544/2934735716',
+      'ca-app-pub-3940256099942544/6300978111' : 'ca-app-pub-3940256099942544/2934735716',
       size: AdSize.banner,
       request: AdRequest(),
       listener: BannerAdListener(
@@ -102,6 +176,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
     _bannerAd.load();
+
+    super.initState();
   }
 
   @override
