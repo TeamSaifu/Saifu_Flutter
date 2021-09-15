@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+
 import 'package:saifu/shortcut_model.dart';
 
+import 'package:intl/intl.dart';
+
 class ShortcutPage extends StatelessWidget {
-  final List<ShortcutModel> _shortcutList = [
-    ShortcutModel(price: '￥1000', icon: Icons.add, name: '住田'),
-    ShortcutModel(price: '￥2000', icon: Icons.face, name: '田中'),
+  final formatter = NumberFormat("#,###");
+
+  final List<ShortcutItemModel> _shortcutList = [
+    ShortcutItemModel(price: 1000, icon: Icons.face, name: '住田'),
+    ShortcutItemModel(price: 500, icon: Icons.money, name: '石ころ'),
+    ShortcutItemModel(price: 35100, icon: Icons.radio, name: 'なんか電化'),
   ];
 
   Widget _shortcutItem({int index}) {
@@ -25,7 +31,7 @@ class ShortcutPage extends StatelessWidget {
           ),
           Expanded(
             flex: 4,
-            child: Text(_shortcutList[index].price),
+            child: Text('￥' + formatter.format(_shortcutList[index].price)),
           ),
         ],
       ),

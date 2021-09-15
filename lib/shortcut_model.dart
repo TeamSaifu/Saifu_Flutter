@@ -11,15 +11,3 @@ class ShortcutItemModel {
     @required this.price,
   });
 }
-                    
-class ShortcutModel {
-  IconData icon;
-  String name;
-  String price;
-
-  ShortcutModel({
-    this.icon,
-    this.name,
-    @required this.price,
-  });
-}
